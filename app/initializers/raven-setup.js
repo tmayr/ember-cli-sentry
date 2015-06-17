@@ -24,9 +24,11 @@ export function initialize() {
     }
   }
 
-  Ember.RSVP.on('error', function(error){
-    if(error !== undefined){
-      Raven.captureException(error);
+  Ember.RSVP.on('error', function (reason) {
+    if (reason instanceof Error) {
+      Raven.captureException(reason, {extra: {context: 'Unhandled Promise error detected'}});
+    } else {
+      Raven.captureMessage('Unhandled Promise error detected', {extra: {reason: reason}});
     }
   });
 }
